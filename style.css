@@ -1,0 +1,39 @@
+body {
+    background-image: url(/Images/background.avif);
+    background-size: cover;
+}
+
+img {
+    height: 500px;
+    width: fit-content;
+    border-radius: 2%;
+    outline: 2px solid white;
+}
+
+.recipe-view {
+    margin-top: 2%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.recipe-opts {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.recipe-opts input {
+    width: 75%;
+    order: 1;
+}
+.recipe-opt-btns {
+    width: 50%;
+}
+
+.recipe-opts .recipe-opt-btns {
+    margin-top: 15px;
+    order: 2;
+}
