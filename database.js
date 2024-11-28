@@ -1,10 +1,24 @@
+const { getRandomValues } = require('crypto');
+
+// -Imports
 require('dotenv').config();
 
-api_call = "https://api.spoonacular.com/recipes/random?apiKey=" + process.env.API_KEY + "&number=100";
-let apiResults = {};
+// -Global Variables
+api_call = "https://api.spoonacular.com/recipes/random?apiKey=" + process.env.API_KEY + "&number=10";
+let Recipes = {
+    'breakfast':[],
+    'lunch':[],
+    'dinner':[],
+    'side':[],
+    'all':[]
+};
 
 // Get API information for website
 async function fetchData(url) {
+    if (Recipes.all.length !== 0) {
+        console.log(`Using already called recipes.`);
+        return Recipes;
+    }
     try {
         const res = await fetch(url);
         if (!res.ok) {
@@ -23,70 +37,129 @@ async function fetchData(url) {
 }
 
 // Use an async function to handle the result of fetchData
-async function getApiData(api_call) {
+async function getApiData(api_call, sorted) {
     const apiResults = await fetchData(api_call);  // Wait for fetchData to resolve
-    return apiResults;
-}
 
+    if (!apiResults) {
+        console.error("No results received from API");
+        return;
+    }
+    
+    if(sorted === true) {
+        console.log("Sorted already.")
+        return Recipes;
+    }
 
-let BR = {'breakfast':[]};
-let LR = {'lunch':[]};
-let DR = {'dinner':[]};
-let SR = {'side':[]};
-let AR = {'all':[]};   
-
-
-// Example usage
-getApiData(api_call)
-    .then(apiResults => {
-
+    apiResults.recipes.forEach( item => {
         
-        // Process apiResults here if needed
-        apiResults.recipes.forEach( item => {
+        let i = 0;
+    //  --check each dishType and add it to the appropriate json data subpart 
+        item.dishTypes.forEach(choice => {
+            let added = false;
+            
 
-        //  --check each occasion and add it to the appropriate json data var 
-            item.dishTypes.forEach(choice => {
+            // Get the instructions, title, image
+            let data = {
+                title: item.title,
+                Image: item.image,
+                Ingredients: item.ingredients,     
+                Instructions: item.instructions
+                            
+            }
 
-                // Get the instructions, title, image
-                data = {
-                    title: item.title,
-                    Image: item.image,
-                    Ingredients: item.ingredients,     
-                    Instructions: item.instructions
-                                
-                } 
+            
+            
+            // --Check to see if recipe is already added
+            Recipes.all.forEach(recipe => {
+                console.log(`\nStored title: ${recipe.title}`)
+                console.log(`Current looped title: ${data.title}`)
+                if (recipe.title === data.title){
+                    console.log("Recipe already added \n");
+                    added = true;
+                    
+                } else {
+                    added = false;
+                }
+            })            
 
-                // console.log("Recipe Info: ", data)
-                // --Push every recipe
-                AR.all.push(data);
-
+            // --If not added, sort to sub json section
+            if(added === false){
                 switch (choice) {
                     case 'breakfast':
-                        BR.breakfast.push(data)
-                        console.log(`Added data to breakfast`)
+                        Recipes.all.push(data);
+                        Recipes.breakfast.push(data);
+                        console.log(`Added data to breakfast`);
                         break;
 
                     case 'lunch':
-                        LR.lunch.push(data)
-                        console.log(`Added data to lunch`)
+                        Recipes.all.push(data);
+                        Recipes.lunch.push(data);
+                        console.log(`Added data to lunch`);
                         break;
 
                     case 'dinner':
-                        DR.dinner.push(data)
-                        console.log(`Added data to dinner`)
+                        Recipes.all.push(data);
+                        Recipes.dinner.push(data);
+                        console.log(`Added data to dinner`);
                         break;
 
                     case ('snack' || 'side dish'):
-                        SR.side.push(data)
-                        console.log(`Added data to sides`)
+                        Recipes.all.push(data);
+                        Recipes.side.push(data);
+                        console.log(`Added data to sides`);
                         break;
 
                     default:
-                        console.log("No meal Type received from API")
+                        console.log("No meal Type received from API");
                         break;
-                }       
-            })
-        });
+                }
+            }
+            
+            console.log(`Current dishType position: ${i} \n dishTypeLength: ${item.dishTypes.length - 1}`)
+            
+            // If on last dishType and still not added, push to all recipe sub
+            if(added === false && i === item.dishTypes.length - 1) {
+                console.log("No matching dish type, adding to random recipe...")
+                Recipes.all.push(data);
+            }
+            // -- increment i after done sorting recipe
+            i++;
+        })
+    });
+
+    
+    console.log(JSON.stringify(Recipes.all[0]))
+    return Recipes;
+}
+
+function getRandomNumber(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function getRandomRecipe() {
+    getApiData(api_call, true).then(data => {
+        randomRecipe =  getRandomNumber(0, data.breakfast.length)
+        returnedRecipe = JSON.stringify(data.all);
+        console.log(`Returned recipe info: \n ${returnedRecipe}`);
+     })
+}
+
+function getBreakfastRecipe() {
+    getApiData(api_call, true).then(data => {
+        console.log(`Data: ${data}`)
+       randomRecipe =  getRandomNumber(0, Recipes.breakfast.length)
+       returnedRecipe = data.breakfast[randomRecipe];
+       console.log(`Returned recipe info: \n ${returnedRecipe}`);
+    }) 
+}
+
+
+// Example usage
+getApiData(api_call, false)
+    .then(apiResults => {
+
+        console.log("Processed Recipes: ", apiResults.all.length)
+ 
     })
     .catch(err => {
         // Handle errors
@@ -94,18 +167,7 @@ getApiData(api_call)
     });
 
 
-
-
-
-
-
-
-//    --Go through each recipe called by the api
-
-
-
-console.log("Breakfast recipes: ", BR.breakfast.length);
-console.log("Lunch recipes: ", LR.lunch.length);
-console.log("Dinner recipes: ", DR.dinner.length);
-console.log("Side dish Recipes: ", SR.side.length);
-console.log("All recipes: ", AR.all.length);
+module.exports = {
+    getRandomRecipe,    
+    getBreakfastRecipe
+}
