@@ -1,7 +1,6 @@
 require('dotenv').config();
 
-// process.env.API_KEY
-api_call = "https://api.spoonacular.com/recipes/random?apiKey=" + "97b0708ff3a644e8a4d4201dd23eadd7" + "&number=100";
+api_call = "https://api.spoonacular.com/recipes/random?apiKey=" + process.env.API_KEY + "&number=100";
 let apiResults = {};
 
 // Get API information for website
@@ -26,7 +25,6 @@ async function fetchData(url) {
 // Use an async function to handle the result of fetchData
 async function getApiData(api_call) {
     const apiResults = await fetchData(api_call);  // Wait for fetchData to resolve
-    console.log(apiResults);  // Handle the resolved data here
     return apiResults;
 }
 
@@ -35,7 +33,7 @@ let BR = {'breakfast':[]};
 let LR = {'lunch':[]};
 let DR = {'dinner':[]};
 let SR = {'side':[]};
-let allRecipes = {'all':[]};   
+let AR = {'all':[]};   
 
 
 // Example usage
@@ -60,23 +58,27 @@ getApiData(api_call)
 
                 // console.log("Recipe Info: ", data)
                 // --Push every recipe
-                allRecipes.all.push(data);
+                AR.all.push(data);
 
                 switch (choice) {
                     case 'breakfast':
-                        breakfastRecipes.breakfast.push(data)
+                        BR.breakfast.push(data)
+                        console.log(`Added data to breakfast`)
                         break;
 
                     case 'lunch':
-                        lunchRecipes.lunch.push(data)
+                        LR.lunch.push(data)
+                        console.log(`Added data to lunch`)
                         break;
 
                     case 'dinner':
-                        dinnerRecipes.dinner.push(data)
+                        DR.dinner.push(data)
+                        console.log(`Added data to dinner`)
                         break;
 
                     case ('snack' || 'side dish'):
-                        sideRecipes.side.push(data)
+                        SR.side.push(data)
+                        console.log(`Added data to sides`)
                         break;
 
                     default:
@@ -85,7 +87,6 @@ getApiData(api_call)
                 }       
             })
         });
-        return { breakfastRecipes, lunchRecipes, dinnerRecipes, sideRecipes, allRecipes }
     })
     .catch(err => {
         // Handle errors
@@ -103,8 +104,8 @@ getApiData(api_call)
 
 
 
-console.log("Breakfast recipes: ", breakfastRecipes.breakfast.length);
-console.log("Lunch recipes: ", lunchRecipes.lunch.length);
-console.log("Dinner recipes: ", dinnerRecipes.dinner.length);
-console.log("Side dish Recipes: ", sideRecipes.side.length);
-console.log("All recipes: ", allRecipes.all.length);
+console.log("Breakfast recipes: ", BR.breakfast.length);
+console.log("Lunch recipes: ", LR.lunch.length);
+console.log("Dinner recipes: ", DR.dinner.length);
+console.log("Side dish Recipes: ", SR.side.length);
+console.log("All recipes: ", AR.all.length);
