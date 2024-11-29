@@ -9,7 +9,7 @@
 </head>
 <body> 
     <h1 class="text-white text-center">Lets Cook!</h1>
-    <div class="recipe-view" >
+    <div class="recipe-view" <%= isHidden ? 'hidden' : '' %>>
         <img id="recipe-image" src="<%= recipeImg %>" alt="recipe image">
         <h1 id="recipe-title" class="title text-white"><%= recipeTitle %></h1>
         <h2 class="text-white">Ingredients</h2>

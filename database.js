@@ -56,13 +56,14 @@ async function getApiData(api_call, sorted) {
     //  --check each dishType and add it to the appropriate json data subpart 
         item.dishTypes.forEach(choice => {
             let added = false;
-            
+
+            // -- Need to go through ingredients and add extenedIngredients.name and .amount to ingredients in data json var 11/29/24
 
             // Get the instructions, title, image
             let data = {
                 title: item.title,
                 image: item.image,
-                ingredients: item.ingredients,     
+                ingredients: item.extendedIngredients,     
                 instructions: item.instructions
                             
             }
@@ -71,10 +72,8 @@ async function getApiData(api_call, sorted) {
             
             // --Check to see if recipe is already added
             Recipes.all.forEach(recipe => {
-                console.log(`\nStored title: ${recipe.title}`)
-                console.log(`Current looped title: ${data.title}`)
+
                 if (recipe.title === data.title){
-                    console.log("Recipe already added \n");
                     added = true;
                     
                 } else {
@@ -88,53 +87,50 @@ async function getApiData(api_call, sorted) {
                     case 'breakfast':
                         Recipes.all.push(data);
                         Recipes.breakfast.push(data);
-                        console.log(`Added data to breakfast`);
                         break;
 
                     case 'lunch':
                         Recipes.all.push(data);
                         Recipes.lunch.push(data);
-                        console.log(`Added data to lunch`);
                         break;
 
                     case 'dinner':
                         Recipes.all.push(data);
                         Recipes.dinner.push(data);
-                        console.log(`Added data to dinner`);
                         break;
 
                     case ('snack' || 'side dish'):
                         Recipes.all.push(data);
                         Recipes.side.push(data);
-                        console.log(`Added data to sides`);
                         break;
 
                     default:
-                        console.log("No meal Type received from API");
                         break;
                 }
             }
             
-            console.log(`Current dishType position: ${i} \n dishTypeLength: ${item.dishTypes.length - 1}`)
             
             // If on last dishType and still not added, push to all recipe sub
             if(added === false && i === item.dishTypes.length - 1) {
-                console.log("No matching dish type, adding to random recipe...")
                 Recipes.all.push(data);
             }
             // -- increment i after done sorting recipe
             i++;
         })
     });
-
-    
-    console.log(JSON.stringify(Recipes.all[0]))
     return Recipes;
 }
 
 
 function getRandomRecipe(i) {
     return getApiData(api_call, true).then(data => {
+        console.log(`Total recipes: ${data.all.length}`)
+        if (i >= data.all.length){
+            i = i % data.all.length;
+        }
+
+        console.log(`Ingredients:\n${JSON.stringify(data.all[i].ingredients)}`)
+
         return [
             data.all[i].title,
             data.all[i].image,
@@ -144,18 +140,71 @@ function getRandomRecipe(i) {
      })
 }
 
-function getBreakfastRecipe() {
-    getApiData(api_call, true).then(data => {
-        
-    }) 
+function getBreakfastRecipe(i) {
+    return getApiData(api_call, true).then(data => {
+        console.log(`Total recipes: ${data.breakfast.length}`)
+        if (i >= data.breakfast.length){
+            i = i % data.breakfast.length;
+        }
+        return [
+            data.breakfast[i].title,
+            data.breakfast[i].image,
+            data.breakfast[i].ingredients,     
+            data.breakfast[i].instructions
+        ]
+     })
+}
+
+function getLunchRecipe(i) {
+    return getApiData(api_call, true).then(data => {
+        console.log(`Total recipes: ${data.lunch.length}`)
+        if (i >= data.lunch.length){
+            i = i % data.lunch.length;
+        }
+        return [
+            data.lunch[i].title,
+            data.lunch[i].image,
+            data.lunch[i].ingredients,     
+            data.lunch[i].instructions
+        ]
+     })
+}
+
+function getDinnerRecipe(i) {
+    return getApiData(api_call, true).then(data => {
+        console.log(`Total recipes: ${data.dinner.length}`)
+        if (i >= data.dinner.length){
+            i = i % data.dinner.length;
+        }
+        return [
+            data.dinner[i].title,
+            data.dinner[i].image,
+            data.dinner[i].ingredients,     
+            data.dinner[i].instructions
+        ]
+     })
+}
+
+function getSideRecipe(i) {
+    return getApiData(api_call, true).then(data => {
+        console.log(`Total recipes: ${data.side.length}`)
+        if (i >= data.side.length){
+            i = i % data.side.length;
+        }
+        return [
+            data.side[i].title,
+            data.side[i].image,
+            data.side[i].ingredients,     
+            data.side[i].instructions
+        ]
+     })
 }
 
 
-// Example usage
 getApiData(api_call, false)
     .then(apiResults => {
 
-        console.log("Processed Recipes: ", apiResults.all.length)
+        // console.log("Look for ingredients: ", apiResults.all[0])
  
     })
     .catch(err => {
@@ -163,8 +212,13 @@ getApiData(api_call, false)
         console.error("Error processing API results", err);
     });
 
+// getRandomRecipe(0, true)
+
 
 module.exports = {
     getRandomRecipe,    
-    getBreakfastRecipe
+    getBreakfastRecipe,
+    getLunchRecipe,
+    getDinnerRecipe,
+    getSideRecipe
 }
