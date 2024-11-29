@@ -61,9 +61,9 @@ async function getApiData(api_call, sorted) {
             // Get the instructions, title, image
             let data = {
                 title: item.title,
-                Image: item.image,
-                Ingredients: item.ingredients,     
-                Instructions: item.instructions
+                image: item.image,
+                ingredients: item.ingredients,     
+                instructions: item.instructions
                             
             }
 
@@ -132,24 +132,21 @@ async function getApiData(api_call, sorted) {
     return Recipes;
 }
 
-function getRandomNumber(min, max) {
-    return Math.random() * (max - min) + min;
-}
 
-function getRandomRecipe() {
-    getApiData(api_call, true).then(data => {
-        randomRecipe =  getRandomNumber(0, data.breakfast.length)
-        returnedRecipe = JSON.stringify(data.all);
-        console.log(`Returned recipe info: \n ${returnedRecipe}`);
+function getRandomRecipe(i) {
+    return getApiData(api_call, true).then(data => {
+        return [
+            data.all[i].title,
+            data.all[i].image,
+            data.all[i].ingredients,     
+            data.all[i].instructions
+        ]
      })
 }
 
 function getBreakfastRecipe() {
     getApiData(api_call, true).then(data => {
-        console.log(`Data: ${data}`)
-       randomRecipe =  getRandomNumber(0, Recipes.breakfast.length)
-       returnedRecipe = data.breakfast[randomRecipe];
-       console.log(`Returned recipe info: \n ${returnedRecipe}`);
+        
     }) 
 }
 

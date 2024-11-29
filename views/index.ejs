@@ -9,13 +9,13 @@
 </head>
 <body> 
     <h1 class="text-white text-center">Lets Cook!</h1>
-    <div class="recipe-view" hidden>
-        <img src="/public/Images/test.jpeg" alt="recipe image">
-        <h1 class="title text-white"> Recipe Title</h1>
+    <div class="recipe-view" >
+        <img id="recipe-image" src="<%= recipeImg %>" alt="recipe image">
+        <h1 id="recipe-title" class="title text-white"><%= recipeTitle %></h1>
         <h2 class="text-white">Ingredients</h2>
-        <p class="ingredients text-white">these are the ingredients</p>
+        <p id="recipe-ingredients" class="ingredients text-white"><%= recipeIngredients %></p>
         <h2 class="text-white">Instructions</h2>
-        <p class="instructions text-white">these are the instructions on how to cook it</p>
+        <p id="recipe-instructions" class="instructions text-white"><%= recipeInstructions %></p>
     </div>
     <div class="recipe-opts">
         <input class="form-control" type="text" placeholder="Input allergies or unwanted ingredients">
