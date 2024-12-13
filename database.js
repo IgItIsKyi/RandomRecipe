@@ -58,12 +58,20 @@ async function getApiData(api_call, sorted) {
             let added = false;
 
             // -- Need to go through ingredients and add extenedIngredients.name and .amount to ingredients in data json var 11/29/24
+            let allIngredients = '';
 
-            // Get the instructions, title, image
+            item.extendedIngredients.forEach(ingredient => {
+
+                allIngredients += ingredient.original + "\n";
+                
+
+            })
+
+            // Get the instructions, title, image, ingredients
             let data = {
                 title: item.title,
                 image: item.image,
-                ingredients: item.extendedIngredients,     
+                ingredients: allIngredients,
                 instructions: item.instructions
                             
             }
@@ -128,8 +136,6 @@ function getRandomRecipe(i) {
         if (i >= data.all.length){
             i = i % data.all.length;
         }
-
-        console.log(`Ingredients:\n${JSON.stringify(data.all[i].ingredients)}`)
 
         return [
             data.all[i].title,
